@@ -16,6 +16,7 @@ class DemoHashMap {
         iterationPatterns();
         java8Defaults();
         countersAndGrouping();
+        interopSince9();
     }
 
 
@@ -139,5 +140,14 @@ class DemoHashMap {
             byInitial.computeIfAbsent(k, kk -> new ArrayList<>()).add(u);
         }
         System.out.println("grouped: " + byInitial);
+    }
+
+    static void interopSince9() {
+        System.out.println("\n== Interop since Java 9 ==");
+        Map<String,Integer> immutable = Map.of("a",1,"b",2);
+        System.out.println("immutable: " + immutable.getClass().getName());
+        Map<String,Integer> mutable = new HashMap<>(immutable);
+        mutable.put("c", 3);
+        System.out.println("copied into HashMap -> " + mutable);
     }
 }
