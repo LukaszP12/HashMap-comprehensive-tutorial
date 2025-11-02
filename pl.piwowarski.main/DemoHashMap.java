@@ -3,6 +3,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 class DemoHashMap {
 
@@ -17,6 +18,7 @@ class DemoHashMap {
         java8Defaults();
         countersAndGrouping();
         interopSince9();
+        pitfalls();
     }
 
 
@@ -149,5 +151,24 @@ class DemoHashMap {
         Map<String,Integer> mutable = new HashMap<>(immutable);
         mutable.put("c", 3);
         System.out.println("copied into HashMap -> " + mutable);
+    }
+
+    // 8) Pitfalls
+    static void pitfalls() {
+        System.out.println("\n== Pitfalls ==");
+        // Mutable key example
+        class Box {
+            int v;
+            Box(int v){this.v=v;}
+            public int hashCode(){ return Objects.hash(v); }
+            public boolean equals(Object o){ return (o instanceof Box b) && b.v==v; }
+            public String toString(){ return "Box("+v+")"; }
+        }
+        var m = new HashMap<Box, String>();
+        var key = new Box(1);
+        m.put(key, "hello");
+        key.v = 2; // mutates key after insertion (DON'T DO THIS)
+        System.out.println("lookup with mutated key -> " + m.get(key)); // likely null
+        System.out.println("containsKey(new Box(1)) -> " + m.containsKey(new Box(1))); // false
     }
 }
